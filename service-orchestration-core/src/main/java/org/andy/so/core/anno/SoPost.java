@@ -21,24 +21,32 @@ import java.lang.annotation.*;
 public @interface SoPost {
     /**
      * Alias for {@link RequestMapping#path}.
+     *
+     * @return see RequestMapping
      */
     @AliasFor(annotation = RequestMapping.class)
     String[] path() default {};
 
     /**
      * Alias for {@link RequestMapping#params}.
+     *
+     * @return see RequestMapping
      */
     @AliasFor(annotation = RequestMapping.class)
     String[] params() default {};
 
     /**
      * Alias for {@link RequestMapping#consumes}.
+     *
+     * @return see RequestMapping
      */
     @AliasFor(annotation = RequestMapping.class)
     String[] consumes() default {"application/json;charset=utf-8"};
 
     /**
      * Alias for {@link RequestMapping#produces}.
+     *
+     * @return see RequestMapping
      */
     @AliasFor(annotation = RequestMapping.class)
     String[] produces() default {"application/json;charset=utf-8"};

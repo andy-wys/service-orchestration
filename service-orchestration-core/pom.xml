@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.andy-wys</groupId>
     <artifactId>service-orchestration-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>service-orchestration-core</name>
 
     <url>https://github.com/andy-wys/service-orchestration</url>
