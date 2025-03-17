@@ -5,7 +5,7 @@
     <artifactId>service-orchestration-core</artifactId>
     <version>1.0.0</version>
     <name>service-orchestration-core</name>
-
+    <description>服务编排框架 Service Orchestration Framework，主要是为了将不同标准的服务接口转换为标准输入输出，减少代码开发</description>
     <url>https://github.com/andy-wys/service-orchestration</url>
 
     <developers>
@@ -24,6 +24,13 @@
         <developerConnection>scm:git:ssh://git@github.com:andy-wys/service-orchestration.git</developerConnection>
         <url>https://github.com/andy-wys/service-orchestration</url>
     </scm>
+    <!-- 开源协议 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
