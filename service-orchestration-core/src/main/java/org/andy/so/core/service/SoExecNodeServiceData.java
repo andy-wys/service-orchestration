@@ -82,7 +82,7 @@ public class SoExecNodeServiceData {
 
     /**
      * 获取 header 值<p>
-     * 取值顺序：httpServletRequest -> httpHeaders -> httpServletResponse
+     * 取值顺序：httpServletRequest 》 httpHeaders 》 httpServletResponse
      *
      * @param key header name
      * @return value

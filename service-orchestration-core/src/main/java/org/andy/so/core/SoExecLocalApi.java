@@ -46,12 +46,14 @@ public class SoExecLocalApi {
         return execute(null, null, merchantCode, apiPath, param);
     }
 
+
     /**
      * <h2>通过商户编码和接口名称查找并执行服务</h2>
      *
      * @param merchantCode 商户编码
      * @param apiPath      配置路径
      * @param param        请求参数
+     * @param tClass       执行结果返回类型
      * @param <T>          执行结果返回类型
      * @return 标准返回数据对象
      */

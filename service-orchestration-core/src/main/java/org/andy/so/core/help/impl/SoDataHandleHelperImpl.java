@@ -87,7 +87,7 @@ public class SoDataHandleHelperImpl implements SoDataHandleHelper {
 
     /**
      * <h3>将数据处理器添加到 {@code handleMap} 中</h3>
-     * map: type -> instance
+     * map: type 》 instance
      *
      * @param type     类型名称，不能为空，否则不添加
      * @param instance 处理器，不能为空，否则不添加

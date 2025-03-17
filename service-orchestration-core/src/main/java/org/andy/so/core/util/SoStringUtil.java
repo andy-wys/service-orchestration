@@ -113,13 +113,14 @@ public final class SoStringUtil {
      * Check that the given {@code CharSequence} is neither {@code null} nor
      * of length 0.
      * <p>Note: this method returns {@code true} for a {@code CharSequence}
-     * that purely consists of whitespace.
+     * that purely consists of whitespace.</p>
      * <p><pre class="code">
      * StringUtils.hasLength(null) = false
      * StringUtils.hasLength("") = false
      * StringUtils.hasLength(" ") = true
      * StringUtils.hasLength("Hello") = true
      * </pre>
+     * </p>
      *
      * @param str the {@code CharSequence} to check (may be {@code null})
      * @return {@code true} if the {@code CharSequence} is not {@code null} and has length

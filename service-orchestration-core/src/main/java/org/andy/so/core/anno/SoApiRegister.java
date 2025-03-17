@@ -9,14 +9,15 @@ import java.lang.annotation.*;
 
 /**
  * <h2>网关服务接口注册</h2>
- * 继承于 Spring {@link Component}，便于 spring 的管理和兼容<p>
- *
+ * 继承于 Spring {@link Component}，便于 spring 的管理和兼容
+ * <ul>
  * <li>该注解定义的服务都必须实现 {@link SoApiService#handle} 方法</li>
  * <li>该注解定义的服务类可以被自动扫描并注册到服务管理</li>
  * <li>该注解定义的服务类默认不使用 XML 配置转换</li>
  * <li>path 为该服务对应的接口地址，可以是多个地址</li>
  * <li>merchantCode 为该服务对应的商户编码</li>
  * <li>该服务定义的服务默认数据格式都是 JSON，在 {@link SoGet} 和 {@link SoPost} 注解可以修改</li>
+ * </ul>
  *
  * @author: andy
  */

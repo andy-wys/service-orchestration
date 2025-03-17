@@ -128,6 +128,9 @@ public class SoParseDataTypeHandle implements SoDataHandle<Object, Object> {
     }
 
     /**
+     * 构造函数
+     *
+     * @param handleName 处理器名称
      * @param targetType 目标数据类型
      */
     public SoParseDataTypeHandle(String handleName, Class<?> targetType) {
