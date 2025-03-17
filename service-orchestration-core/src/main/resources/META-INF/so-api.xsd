@@ -1,0 +1,694 @@
+<xsd:schema xmlns="https://github.com/andy-wys/service-orchestration"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            targetNamespace="https://github.com/andy-wys/service-orchestration">
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[ 服务编排框架 - ANDY ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <!-- 商户节点配置，一个商户下面可以配置多个接口 -->
+    <xsd:element name="merchant">
+        <xsd:annotation>
+            <xsd:documentation><b>标准服务配置，是服务的管理维度</b>，一个 merchant 标签就是一个标准服务
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="merchantAttrType">
+                    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                        <xsd:group ref="merChildElements"/>
+                        <xsd:any namespace="##other" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:choice>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <!-- 商户维度基本属性 -->
+    <xsd:complexType name="merchantAttrType" abstract="true">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>商户基本配置属性</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="id" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation><b>指定当前服务的唯一 ID</b>，如果其他编排节点需要引用当前节点数据，则需要通过当前 ID 才能找到本节点
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="requestPath" type="xsd:ID" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>标准接口的请求或调用地址</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="code" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>商户服务编码，该编码会作为接口地址的一部分</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="name" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>商户服务名称，建议简短地描述接口的功能</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="reqDataHandle" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation><b>标准接口请求数据处理器</b>，会在第一步就执行，数据为当前接口收到的请求报文
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="respDataHandle" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation><b>标准接口响应数据处理器</b>，会在最后执行，数据为当前接口返回的整体报文
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="regRequestMapping" default="TRUE">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>将该接口注册到 request mapping 中，可供外部直接调用，默认为 TRUE</b>
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="TRUE"/>
+                    <xsd:enumeration value="FALSE"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <!-- 商户子节点 -->
+    <xsd:group name="merChildElements">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="2">
+                <xsd:element name="description" type="descriptionNode"/>
+                <xsd:element name="mock" type="mockNodeType"/>
+            </xsd:choice>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="api" type="apiElement">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <b>定义一个 HTTP 协议的接口调用编排</b>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="rpc" type="rpcElement">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <b>定义一个 RPC 协议的接口编排</b>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="local" type="localElement">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <b>定义一个执行本地代码方法的编排</b>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="redirect" type="redirectElement">
+                    <xsd:annotation>
+                        <xsd:documentation><b>定义一个重定向的编排</b>，如果配置多个重定向逻辑，只有第一个满足 condition 条件的会生效
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="ref" type="refElement">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <b>引用另外一个 XML 的接口配置</b>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:group>
+
+    <!-- 描述节点 -->
+    <xsd:complexType name="descriptionNode" mixed="true">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ 描述信息，只作为注释信息，代码不解析 ]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:complexType>
+
+    <xsd:attributeGroup name="baseServiceNodeAttrGroup">
+        <xsd:attribute name="id" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定当前服务的唯一 ID</b>，如果其他编排节点需要引用当前节点数据，则需要通过当前 ID 才能找到本节点
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="order" type="xsd:integer" default="0">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>当前编排服务的执行顺序，数字越小，优先级越高</b>，默认会按配置依次顺序执行
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="blocked" type="blockedType" default="EXCEPTION"/>
+        <xsd:attribute name="executor" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定当前节点的一个执行实现类</b>
+                    <li>这里是为了给使用者提供一个自定义实现的扩展方法，一般情况下默认的实现类都能满足需求;</li>
+                    <li>自定义时必须要实现 SoServiceNodeExecutor 接口，否则不会生效</li>
+                    <li>自定义实现类必须注入到 spring 容器中，否则不会生效;</li>
+                    <li>since v-1.4.0;</li>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <!-- api 节点元素配置 -->
+    <xsd:complexType name="apiElement">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>API 配置，支持 HTTP 协议</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="5">
+            <xsd:element name="description" type="descriptionNode"/>
+            <xsd:element name="mock" type="mockNodeType"/>
+            <xsd:element name="condition" type="conditionNodeType"/>
+            <xsd:element name="req" type="apiPropMapType">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <b>定义当前编排服务的入参或请求报文</b>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="resp" type="apiPropMapType">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        <b>定义当前编排服务的出参或响应报文</b>
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:choice>
+
+        <xsd:attributeGroup ref="baseServiceNodeAttrGroup"/>
+
+        <xsd:attribute name="url" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定要调用的远程服务地址</b>
+                    <li>优先会使用本属性配置;</li>
+                    <li>如果该属性未配置，则会从 req 节点中找 $.url 配置;</li>
+                    <li>如果以上两个配置均未找到，则不会发送远程请求，但其他流程依旧会执行;</li>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="timeout" type="xsd:integer" default="15000">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>调用远程服务超时时间，单位毫秒，默认 15000，即 15 秒</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="method" default="POST">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>远程调用方法，默认 POST</b>，当前只支持 GET 和 POST
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="POST"/>
+                    <xsd:enumeration value="GET"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+
+        <xsd:attribute name="contentType" type="contentType" default="JSON"/>
+        <xsd:attribute name="charset" type="charsetType" default="UTF8"/>
+    </xsd:complexType>
+
+    <!-- RPC 节点配置 -->
+    <xsd:complexType name="rpcElement">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>RPC consumer 配置</b>，由于 RPC 配置项太多，难以通过一个 XSD 来约束，所以需要使用 RPC 正常注册声明方式，通过 consumerId 来引用
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="5">
+            <xsd:element name="description" type="descriptionNode"/>
+            <xsd:element name="mock" type="mockNodeType"/>
+            <xsd:element name="condition" type="conditionNodeType"/>
+            <xsd:element name="req" type="rpcPropMapType"/>
+            <xsd:element name="resp" type="apiPropMapType"/>
+        </xsd:choice>
+
+        <xsd:attributeGroup ref="baseServiceNodeAttrGroup"/>
+        <xsd:attribute name="consumerId" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>RPC 消费者id，需要先按 RPC 的使用方式配置，这里填 RPC 消费者的 bean id</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="method" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>RPC 消费者 bean 要执行的方法名</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <!-- 本地实现类 -->
+    <xsd:complexType name="localElement">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>调用本地代码</b>，需要将本地服务注入到 spring 容器中
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="5">
+            <xsd:element name="description" type="descriptionNode"/>
+            <xsd:element name="mock" type="mockNodeType"/>
+            <xsd:element name="condition" type="conditionNodeType"/>
+            <xsd:element name="req" type="rpcPropMapType"/>
+            <xsd:element name="resp" type="apiPropMapType"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="baseServiceNodeAttrGroup"/>
+        <xsd:attribute name="beanId" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>当前调用服务的 spring 容器的 bean id</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="method" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>调用当前服务的执行方法名</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <!-- 重定向节点配置 -->
+    <xsd:complexType name="redirectElement">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>重定向配置</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="4">
+            <xsd:element name="description" type="descriptionNode"/>
+            <xsd:element name="mock" type="mockNodeType"/>
+            <xsd:element name="condition" type="conditionNodeType"/>
+            <xsd:element name="req" type="apiPropMapType"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="baseServiceNodeAttrGroup"/>
+        <xsd:attribute name="url" type="xsd:string" use="required"/>
+        <xsd:attribute name="charset" type="charsetType" default="UTF8"/>
+    </xsd:complexType>
+
+    <!-- 引用本地 XML 配置 -->
+    <xsd:complexType name="refElement">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>重定向配置</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="5">
+            <xsd:element name="description" type="descriptionNode"/>
+            <xsd:element name="mock" type="mockNodeType"/>
+            <xsd:element name="condition" type="conditionNodeType"/>
+            <xsd:element name="req" type="apiPropMapType"/>
+            <xsd:element name="resp" type="apiPropMapType"/>
+        </xsd:choice>
+        <xsd:attribute name="merchantCode" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>标准服务的编码，会作为服务查找的条件</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="requestPath" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>引用配置的请求地址</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="baseServiceNodeAttrGroup"/>
+    </xsd:complexType>
+
+    <!-- condition -->
+    <xsd:complexType name="conditionNodeType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>定义当前编排服务的执行条件</b>
+                <li>如果条件通过，则会执行当前节点的编排;</li>
+                <li>如果条件不通过，则当前节点编排不再执行;</li>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="compare" type="compareAttrGroup"/>
+        </xsd:choice>
+    </xsd:complexType>
+    <!-- req/resp node -->
+    <xsd:complexType name="apiPropMapType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>出入参配置，req 入参；resp 出参；</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="property" type="reqPropertyType"/>
+            <xsd:element name="header" type="reqPropertyType"/>
+            <xsd:element name="cookie" type="reqPropertyType"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="dataHandleAttrGroup"/>
+    </xsd:complexType>
+
+    <!-- RPC 子节点配置 -->
+    <xsd:complexType name="rpcPropMapType">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="property" type="reqPropertyType"/>
+            <xsd:element name="param" type="methodParamType"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="dataHandleAttrGroup"/>
+    </xsd:complexType>
+
+    <xsd:attributeGroup name="dataHandleAttrGroup">
+        <xsd:attribute name="dataHandle" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>数据处理器，对当前字段值进行特殊处理</b>
+                    <ul>
+                        <b>数据处理器自定义：</b>
+                        <li>对当前数据做后置处理，处理后的值会赋值给当前配置字段;</li>
+                        <li>数据处理器需要实现 DataHandle&lt;T, R&gt; 接口，并且要注入到 spring 容器中;</li>
+                        <li>dataHandle 的值可以是 getConvertType 返回值，也可以是 spring 的 bean id;</li>
+                    </ul>
+
+                    <ul>
+                        <b>框架预设数据处理器：</b>
+                        <li>TO_STRING               ：将数据类型转换成 String              </li>
+                        <li>TO_NUMBER               ：将数据类型转换成 BigDecimal          </li>
+                        <li>TO_BOOLEAN              ：将数据类型转换成 Boolean             </li>
+                        <li>TO_INTEGER              ：将数据类型转换成 Integer             </li>
+                        <li>TO_INTEGER_CEIL         ：将数据类型转换成 Integer，向上取整        </li>
+                        <li>TO_INTEGER_FLOOR        ：将数据类型转换成 Integer，向下取整        </li>
+                        <li>TO_INTEGER_ROUND        ：将数据类型转换成 Integer，四舍五入        </li>
+                        <li>TO_MONEY                ：将数据类型转换成金额表示 #.##            </li>
+                        <li>TO_MONEY_CEIL           ：将数据类型转换成金额表示，向上取整 #.##       </li>
+                        <li>TO_MONEY_FLOOR          ：将数据类型转换成金额表示，向下取整 #.##       </li>
+                        <li>TO_MONEY_ROUND          ：将数据类型转换成金额表示，四舍五入 #.##       </li>
+                        <li>TO_DATE                 ：将数据类型日期对象                    </li>
+                        <li>TO_DATETIME             ：将数据类型日期时间对象                  </li>
+                        <li>TO_YYYY_MM_DD           ：年月日格式，yyyy-MM-dd             </li>
+                        <li>TO_YYYYMMDD             ：年月日格式，yyyyMMdd               </li>
+                        <li>TO_YYYY_MM_DD_HH_MM_SS  ：年月日 时分秒，yyyy-MM-dd HH:mm:ss  </li>
+                        <li>TO_YYYYMMDD_HHMMSS      ：年月日 时分秒，yyyyMMdd HHmmss      </li>
+                        <li>TO_YYYYMMDDHHMMSS       ：年月日 时分秒，yyyyMMddHHmmss       </li>
+                        <li>TO_HHMMSS               ：时分秒，HHmmss                   </li>
+                        <li>TO_HH_MM_SS             ：时分秒，HH:mm:ss                 </li>
+                    </ul>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <!-- condition 子节点属性 -->
+    <xsd:complexType name="compareAttrGroup">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>定义条件比较处理逻辑</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="sourceKey" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定当前数据所取值的源数据 key</b>，语法为 JsonPath,不指定或值为空则取默认值
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="sourceFrom" type="sourceFromType"/>
+        <xsd:attribute name="refApiId" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定 sourceKey 从哪个接口中取值，默认值 requestPath;</b>
+                    一般跟 sourceFrom 配合使用，指定源数据从哪个接口的那个地方取值;
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="compareValue" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>当前数据的目标比较值</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="compareHandle" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>当前数据的比较处理器</b>
+                    <li>已经预制了 equal、greater than、between等</li>
+                    <li>如果预制处理器不满足需求，则可以实现 ConditionHandle 来自定义处理器;</li>
+                    <li>该处理器使用方式同 dataHandle，需要注入到 spring 容器中;</li>
+                    <li>可以是 getHandleName 返回值，也可以是 spring 的 bean id;</li>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="compareType" type="compareType" default="EQUAL"/>
+        <xsd:attribute name="union" type="conditionUnionType" default="AND"/>
+    </xsd:complexType>
+
+    <!-- req 节点属性 -->
+    <xsd:complexType name="reqPropertyType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>配置当前节点的属性</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="basePropAttrGroup"/>
+        <xsd:attributeGroup ref="dataHandleAttrGroup"/>
+    </xsd:complexType>
+
+    <!-- param 节点属性 -->
+    <xsd:complexType name="methodParamType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>配置方法调用的参数，包括参数值、参数类型等</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attributeGroup ref="basePropAttrGroup"/>
+        <xsd:attributeGroup ref="dataHandleAttrGroup"/>
+
+        <xsd:attribute name="dataType" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定当前字段的数据类型;</b>
+                    <li>基础类型可以简写，如 java.lang.String 可写成 string;</li>
+                    <li>自定义类型需要使用全名，区分大小写;</li>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <!-- 字段配置基本属性 -->
+    <xsd:attributeGroup name="basePropAttrGroup">
+        <xsd:attribute name="targetKey" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>把当前值赋值给谁，必须指定，语法为 JsonPath</b>;
+                    <ul>
+                        <b>配置说明：</b>
+                        <li>$：代表根对象;</li>
+                        <li>[]：代表数组类型;</li>
+                        <li>[..]：数组遍历赋值；eg：$.userList[..].userName；</li>
+                        <li>[*]：给数组添加一个元素；eg：$.userList[*].userName；</li>
+                        <li>[2]：给数组指定位置元素设值；eg：$.userList[3].userName；</li>
+                    </ul>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="sourceKey" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定当前数据所取值的源数据 key，语法为 JsonPath,不指定或值为空则取默认值;</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="defaultValue" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>默认值，如果从 sourceKey 中没取到值时会使用默认值;</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <!-- 源数据来源 -->
+        <xsd:attribute name="sourceFrom" type="sourceFromType"/>
+        <xsd:attribute name="refApiId" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定 sourceKey 从哪个接口中取值，默认值 requestPath;</b>
+                    一般跟 sourceFrom 配合使用，指定源数据从哪个接口的那个地方取值;
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+
+    <xsd:simpleType name="contentType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>数据格式，默认 JSON</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="JSON"/>
+            <xsd:enumeration value="FORM"/>
+            <xsd:enumeration value="TEXT_HTML"/>
+            <xsd:enumeration value="TEXT_PLAIN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="charsetType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>字符编码，默认 UTF-8</b>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="UTF8"/>
+            <xsd:enumeration value="GBK"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- 数据来源类型 -->
+    <xsd:simpleType name="sourceFromType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>指定当前配置的数据来源:</b>
+                <li>REQ：该数据从请求参数中取值;</li>
+                <li>RESP：该数据从响应数据中取值;</li>
+                <li>HEADER：该数据从请求 header 中取值;</li>
+                <li>COOKIE：该数据从 cookie 中取值;</li>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <!-- 请求参数 -->
+            <xsd:enumeration value="REQ"/>
+            <!-- 响应报文 -->
+            <xsd:enumeration value="RESP"/>
+            <!-- 请求头 -->
+            <xsd:enumeration value="HEADER"/>
+            <!-- 请求 cookie -->
+            <xsd:enumeration value="COOKIE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- 阻断类型，阻断直接返回/继续执行 -->
+    <xsd:simpleType name="blockedType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>接口阻断类型</b>，当接口出现异常时指定整个编排逻辑如何处理:
+                <li>RETURN：将已处理完的数据返回;</li>
+                <li>EXCEPTION：默认值，阻断整个编排逻辑，抛出异常;</li>
+                <li>CONTINUE：忽略当前异常，继续执行后续编排逻辑;</li>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="RETURN"/>
+            <xsd:enumeration value="EXCEPTION"/>
+            <xsd:enumeration value="CONTINUE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- condition 组合类型 -->
+    <xsd:simpleType name="conditionUnionType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>条件组合类型，可选项有 AND 和 OR</b>，会根据多个条件依次校验，如果有一个不通过则直接阻断，后面的将不再校验;
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="AND"/>
+            <xsd:enumeration value="OR"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- 运算符类型 -->
+    <xsd:simpleType name="compareType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>预定义的比较类型</b>，这里会自动判断是数字还是字符串;如果是特殊判断，需要自己指定 compareHandle 来实现;
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:NMTOKEN">
+            <xsd:enumeration value="EQUAL"/>
+            <xsd:enumeration value="EQUAL_IGNORE_CASE"/>
+            <xsd:enumeration value="GREATER_THAN"/>
+            <xsd:enumeration value="GREATER_EQUAL"/>
+            <xsd:enumeration value="LESS_THAN"/>
+            <xsd:enumeration value="LESS_EQUAL"/>
+            <xsd:enumeration value="IN"/>
+            <xsd:enumeration value="NOT_IN"/>
+            <xsd:enumeration value="BETWEEN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <!-- mock 数据配置 start -->
+    <xsd:complexType name="mockNodeType">
+        <xsd:annotation>
+            <xsd:documentation>
+                <b>定义当前编排服务 mock 数据文件，使用 JSON 文件;</b>
+                <li>mock 功能通过 so.merchant.mock.enable=true/false 配置开关，默认关闭;</li>
+                <li>mock 文件通过 so.merchant.mock.data.dir 配置路径，默认 classpath:api-mock/;</li>
+                <li>为了配置文件的整洁，规定 mock 数据通过单独的文件来定义;</li>
+                <li>JSON 文件包含内容：mock-data、mock-header、mock-cookie、mock-condition 四个对象;</li>
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:attribute name="type" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>配置 mock 的数据类型：</b>请求类型 REQ 或 响应类型 RESP
+                </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:NMTOKEN">
+                    <xsd:enumeration value="REQ"/>
+                    <xsd:enumeration value="RESP"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+
+        <xsd:attribute name="enable" type="xsd:boolean" default="true">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>当前 mock 节点的独立开关;</b>只有在 so.merchant.mock.enable = true 时才会生效;
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="file" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    <b>指定 mock 数据文件名称，必须为 .json 文件</b>
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attributeGroup ref="dataHandleAttrGroup"/>
+    </xsd:complexType>
+</xsd:schema>

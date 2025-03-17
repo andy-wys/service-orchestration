@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<so:merchant xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:so="https://github.com/andy-wys/service-orchestration"
+             xsi:schemaLocation="https://github.com/andy-wys/service-orchestration https://github.com/andy-wys/service-orchestration/so-api.xsd"
+
+             requestPath="demo_data_handle">
+    <so:description>
+        <![CDATA[
+            数据处理器使用示例；
+            请求地址：http://{ip}:{port}/${server.servlet.context-path}/${so.merchant.api-root-path:}/{merchantCode}/demo_data_handle;
+
+            POST http://127.0.0.1:8001/so/ionchi/demo_data_handle
+            Content-Type: application/json
+
+            {
+              "userId": 999,
+              "userName": "andy"
+            }
+
+            响应报文示例：
+            {
+                "code": "0000",
+                "message": "请求成功",
+                "data": {
+                    "user": [
+                        {
+                            "userId": "andy",
+                            "userName": "张三"
+                        },
+                        {
+                            "userId": "Base64编码",
+                            "userName": "Base64编码"
+                        }
+                    ]
+                }
+            }
+            ]]>
+    </so:description>
+    <so:api>
+        <so:resp>
+            <so:property targetKey="$.data.user[0].userId" sourceKey="$.userId" sourceFrom="REQ"/>
+            <so:property targetKey="$.data.user[0].userName" sourceKey="$.userName" sourceFrom="REQ"/>
+            <so:property targetKey="$.data.user[1].userId" sourceKey="$.userId" sourceFrom="REQ"
+                         dataHandle="BASE64_EN"/>
+            <so:property targetKey="$.data.user[1].userName" sourceKey="$.userName" sourceFrom="REQ"
+                         dataHandle="BASE64_EN"/>
+        </so:resp>
+    </so:api>
+
+    <so:api url="https://restapi.amap.com/v3/weather/weatherInfo" method="GET" timeout="10000" blocked="RETURN">
+        <so:description>
+            高德天气预报测试接口
+            <![CDATA[
+            https://restapi.amap.com/v3/weather/weatherInfo?key=26115930b4cf88d01658c0cb54376722&city=110000&extensions=all
+            ]]>
+        </so:description>
+        <so:req>
+            <so:property targetKey="$.key" defaultValue="26115930b4cf88d01658c0cb54376722"/>
+            <so:property targetKey="$.city" defaultValue="110000"/>
+            <so:property targetKey="$.extensions" defaultValue="all"/>
+        </so:req>
+        <so:resp>
+            <so:property targetKey="$.code" sourceKey="$.infocode"/>
+            <so:property targetKey="$.message" sourceKey="$.info"/>
+            <so:property targetKey="$.data.city.name" sourceKey="$.forecasts[0].city"/>
+            <so:property targetKey="$.data.city.cast" sourceKey="$.forecasts[0].casts[0]"/>
+        </so:resp>
+    </so:api>
+</so:merchant>
+

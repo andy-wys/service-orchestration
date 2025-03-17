@@ -1,0 +1,66 @@
+{
+  "groups": [
+    {
+      "name": "so.merchant",
+      "type": "org.andy.so.core.SoMerchantProperty",
+      "sourceType": "org.andy.so.core.SoMerchantProperty"
+    }
+  ],
+  "properties": [
+    {
+      "name": "so.merchant.api-file",
+      "type": "java.lang.String[]",
+      "description": "商户接口配置文件",
+      "sourceType": "org.andy.so.core.SoMerchantProperty",
+      "defaultValue": []
+    },
+    {
+      "name": "so.merchant.api-root-path",
+      "type": "java.lang.String",
+      "description": "商户接口访问根路径",
+      "sourceType": "org.andy.so.core.SoMerchantProperty"
+    },
+    {
+      "name": "so.merchant.code",
+      "type": "java.lang.String",
+      "description": "全局默认商户编码，此处配置则在对应的 XML 中则可省略 code 配置",
+      "sourceType": "org.andy.so.core.SoMerchantProperty"
+    },
+    {
+      "name": "so.merchant.mock-data-dir",
+      "type": "java.lang.String",
+      "description": "mock 数据文件存放目录",
+      "sourceType": "org.andy.so.core.SoMerchantProperty",
+      "defaultValue": [
+        "classpath:api-mock\/"
+      ]
+    },
+    {
+      "name": "so.merchant.mock-enable",
+      "type": "java.lang.Boolean",
+      "description": "是否开启 mock 数据",
+      "sourceType": "org.andy.so.core.SoMerchantProperty",
+      "defaultValue": false
+    },
+    {
+      "name": "so.merchant.name",
+      "type": "java.lang.String",
+      "description": "全局默认商户服务名称，可选",
+      "sourceType": "org.andy.so.core.SoMerchantProperty"
+    },
+    {
+      "name": "so.merchant.trace-key",
+      "type": "java.lang.String",
+      "description": "链路追踪的 traceId",
+      "sourceType": "org.andy.so.core.SoMerchantProperty"
+    },
+    {
+      "name": "so.merchant.log.banner",
+      "type": "java.lang.Boolean",
+      "description": "是否打印框架 banner",
+      "sourceType": "org.andy.so.core.SoMerchantProperty",
+      "defaultValue": true
+    }
+  ],
+  "hints": []
+}

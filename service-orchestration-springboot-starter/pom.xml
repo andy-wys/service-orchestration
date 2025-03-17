@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.andy-wys</groupId>
+    <artifactId>service-orchestration-springboot-starter</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>service-orchestration-springboot-starter</name>
+    <url>https://github.com/andy-wys/service-orchestration</url>
+
+    <properties>
+        <service-orchestration.version>1.0.0-SNAPSHOT</service-orchestration.version>
+        <springboot.version>2.5.8</springboot.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.andy-wys</groupId>
+            <artifactId>service-orchestration-core</artifactId>
+            <version>${service-orchestration.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${springboot.version}</version>
+        </dependency>
+
+    </dependencies>
+</project>

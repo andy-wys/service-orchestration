@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.andy.so.core.starter.SoConfiguration
+
+
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  org.andy.so.core.starter.SoFailureAnalyzer

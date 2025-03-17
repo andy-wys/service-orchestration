@@ -1,0 +1,8 @@
+### 数据处理器示例
+POST http://127.0.0.1:8001/so/ionchi/demo_data_handle
+Content-Type: application/json
+
+{
+  "userId": 999,
+  "userName": "andy"
+}

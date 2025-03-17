@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.andy-wys</groupId>
+    <artifactId>service-orchestration</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>service-orchestration</name>
+    <url>https://github.com/andy-wys/service-orchestration</url>
+    <developers>
+        <developer>
+            <name>andy wang</name>
+            <email>win58@qq.com</email>
+            <roles>
+                <role>Master</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>service-orchestration-core</module>
+        <module>service-orchestration-demo/service-orchestration-demo-springmvc</module>
+        <module>service-orchestration-demo/service-orchestration-demo-springboot</module>
+        <module>service-orchestration-springboot-starter</module>
+    </modules>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+</project>

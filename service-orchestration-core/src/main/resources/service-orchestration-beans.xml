@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 网关全局属性配置类 -->
+    <bean id="soMerchantProperty" class="org.andy.so.core.SoMerchantProperty" primary="false">
+        <property name="name" value="[可选，全局默认商户服务名称]"/>
+        <property name="code" value="[可选，全局默认商户编码，此处配置则在对应的 XML 中则可省略 code 配置]"/>
+        <property name="apiFile">
+            <!-- 可选，商户接口配置文件，默认 classpath:api/*.xml -->
+            <list>
+                <value>classpath:api/*.xml</value>
+            </list>
+        </property>
+        <property name="apiRootPath" value="[可选，商户接口访问根路径]"/>
+        <property name="mockDataDir" value="[可选，mock 数据文件存放目录，默认 classpath:api-mock/]"/>
+        <!-- 否开启 mock 数据，开启后 mock 功能才会生效，默认 false -->
+        <property name="mockEnable" value="false"/>
+    </bean>
+
+    <!-- [可选]框架默认的 MVC 请求入口 controller -->
+    <bean id="soApiCommonHandler" class="org.andy.so.core.SoApiCommonHandler" depends-on="soMerchantProperty"/>
+
+    <!-- [可选]框架默认的全局异常处理类 -->
+    <bean id="soGlobalExceptionHandler" class="org.andy.so.core.SoGlobalExceptionHandler"/>
+
+    <!-- [必须]框架使用的 spring 容器 ApplicationContextAware -->
+    <bean id="soApplicationContextAware" class="org.andy.so.core.SoApplicationContextAware"/>
+
+    <!-- [必须]框架使用的 spring 容器环境包装类 EnvironmentAware -->
+    <bean id="soEnvironmentAware" class="org.andy.so.core.SoEnvironmentAware"/>
+
+    <!-- [必须]框架使用数据处理器帮助类，可通过实现 SoDataHandleHelper 接口来自定义 -->
+    <bean id="soDataHandleHelper" class="org.andy.so.core.help.impl.SoDataHandleHelperImpl"/>
+
+    <!-- [必须]框架使用的参数转换默认实现类，可实现 SoParamConvertHelper 接口来自定义参数转换 -->
+    <bean id="soParamConvertHelper" class="org.andy.so.core.help.impl.SoParamConvertHelperImpl">
+        <constructor-arg ref="soDataHandleHelper"/>
+    </bean>
+    <!-- [必须]框架使用的 mock 帮助默认实现类，可实现 SoMockHelper 接口来自定义 mock 功能 -->
+    <bean id="soMockHelper" class="org.andy.so.core.help.impl.SoMockHelperImpl">
+        <constructor-arg ref="soMerchantProperty"/>
+    </bean>
+    <!-- [必须]框架使用的 mock 帮助默认实现类，可实现 SoMockHelper 接口来自定义 mock 功能 -->
+    <bean id="soConditionHandleHelper" class="org.andy.so.core.help.impl.SoConditionHandleHelperImpl">
+        <constructor-arg ref="soParamConvertHelper"/>
+        <constructor-arg ref="soDataHandleHelper"/>
+    </bean>
+
+    <!-- [必须]默认的 SoHandleNodeService 实现工厂类 -->
+    <bean id="soHandleNodeServiceFactoryBean" class="org.andy.so.core.service.SoServiceNodeHandlerFactoryBean">
+        <constructor-arg ref="soMerchantProperty"/>
+        <constructor-arg ref="soDataHandleHelper"/>
+        <constructor-arg ref="soConditionHandleHelper"/>
+        <constructor-arg ref="soParamConvertHelper"/>
+        <constructor-arg ref="soMerchantFactory"/>
+        <constructor-arg ref="soMockHelper"/>
+    </bean>
+
+    <!-- [必须]框架使用服务节点执行器，可通过实现 SoHandleNodeService 接口自定义-->
+    <bean id="soHandleNodeService" factory-bean="soHandleNodeServiceFactoryBean"
+          factory-method="createHandleNodeService"/>
+
+    <!-- [必须]框架使用的服务配置工厂，保存接口配置，便于快速检索服务配置 -->
+    <bean id="soMerchantFactory" class="org.andy.so.core.SoMerchantFactory">
+        <constructor-arg name="soMerchantProperty" ref="soMerchantProperty"/>
+    </bean>
+
+    <!-- [必须] XML 配置的标准接口服务执行实现流程，可通过实现 SoHandleMerchantService 接口自定义处理标准 -->
+    <bean id="soHandleMerchantService" class="org.andy.so.core.service.impl.SoMerchantServiceDefaultHandler">
+        <constructor-arg name="merchantFactory" ref="soMerchantFactory"/>
+        <constructor-arg name="execXmlService" ref="soHandleNodeService"/>
+    </bean>
+</beans>
